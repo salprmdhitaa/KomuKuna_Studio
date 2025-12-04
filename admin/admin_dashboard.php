@@ -10,8 +10,6 @@
 //     exit;
 // }
 
-include '../user/includes/db.php';
-include '../user/includes/header.php';
 ?>
 
 <!DOCTYPE html>
