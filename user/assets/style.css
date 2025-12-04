@@ -1,0 +1,32 @@
+.navbar {
+    width: 100%;
+    background: #1e1e1e;
+    padding: 15px 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+}
+
+.nav-content {
+    width: 90%;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+.nav-menu {
+    list-style: none;
+    display: flex;
+    gap: 25px;
+    margin: 0;
+}
+
+.nav-menu a {
+    color: white;
+    text-decoration: none;
+}
+
