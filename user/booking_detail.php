@@ -57,7 +57,6 @@ $paket_list = [
     ],
 ];
 
-// Jika paket tidak valid
 if (!$paket || !isset($paket_list[$paket])) {
     echo "<p class='text-center text-red-500 mt-20 text-xl'>Paket tidak ditemukan.</p>";
     exit;
@@ -78,7 +77,7 @@ $data = $paket_list[$paket];
 
 <div class="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-10 items-start">
 
-    <!-- ================== LEFT: Paket Detail ================== -->
+    <!-- ================= LEFT ================= -->
     <div class="w-full max-w-sm">
         <div class="bg-white shadow-lg rounded-2xl overflow-hidden">
             <img src="<?= $data['img'] ?>" class="w-full h-64 object-cover">
@@ -101,18 +100,24 @@ $data = $paket_list[$paket];
     </div>
 
     
-    <!-- ================= MIDDLE: Pilih Tanggal & Jam ================= -->
-    <div class="bg-white shadow-md rounded-xl p-6 max-w-md">
+    <!-- ================= MIDDLE ================= -->
+    <form action="booking_payment.php" method="POST" class="bg-white shadow-md rounded-xl p-6 max-w-md">
 
-        <h3 class="text-xl font-bold mb-1 text-pink-500">
-            Pilih tanggal dan waktu
-        </h3>
+        <h3 class="text-xl font-bold mb-1 text-pink-500">Pilih tanggal dan waktu</h3>
         <div class="w-full h-px bg-gray-200 mb-4 mt-3"></div>
+
+        <!-- Kirim paket -->
+        <input type="hidden" name="paket" value="<?= $data['nama'] ?>">
+        <input type="hidden" name="harga" value="<?= $data['harga'] ?>">
+
+        <!-- Kirim tanggal & jam -->
+        <input type="hidden" name="tanggal" id="send-tanggal">
+        <input type="hidden" name="jam" id="send-jam">
 
         <!-- Tanggal -->
         <label class="block mt-4 text-sm font-semibold mb-1 text-gray-600">Tanggal</label>
-        <input type="date" name="tanggal" 
-               class="w-full px-3 py-2 border rounded-lg mb-5">
+        <input type="date" id="input-tanggal" 
+               class="w-full px-3 py-2 border rounded-lg mb-5" required>
 
         <!-- Jam -->
         <label class="block text-sm font-semibold mb-1 text-gray-600">Jam</label>
@@ -131,7 +136,7 @@ $data = $paket_list[$paket];
 
             <label class="jam-item flex items-center gap-2 p-2 border rounded-lg cursor-pointer hover:bg-gray-50
                 <?= $counter > 5 ? 'hidden' : '' ?>">
-                <input type="radio" name="jam" value="<?= $jam ?>">
+                <input type="radio" name="jam-radio" value="<?= $jam ?>">
                 <span><?= $jam ?></span>
             </label>
 
@@ -139,19 +144,25 @@ $data = $paket_list[$paket];
 
         </div>
 
-        <button onclick="toggleJam()" 
+        <button type="button" onclick="toggleJam()" 
                 id="btn-toggle"
                 class="mt-4 text-pink-500 underline text-sm font-medium">
             Tampilkan semua jadwal
         </button>
 
-    </div>
+        <button type="submit"
+            class="w-full mt-6 bg-gray-300 text-gray-600 py-3 rounded-lg font-semibold cursor-not-allowed"
+            id="btn-lanjut" disabled>
+            Selanjutnya
+        </button>
+
+    </form>
 
 
-    <!-- ================= RIGHT: Ringkasan Booking ================= -->
+    <!-- ================= RIGHT ================= -->
     <div class="bg-white shadow-lg rounded-xl p-6 h-fit">
 
-        <h3 class="text-xl font-bold mb-1 text-pink-500">Tanggal dan Waktu Booking</h3>
+        <h3 class="text-xl font-bold mb-1 text-pink-500">Ringkasan Booking</h3>
         <div class="w-full h-px bg-gray-200 mb-4 mt-3"></div>
 
         <p class="text-gray-600 text-sm mb-3">
@@ -171,24 +182,8 @@ $data = $paket_list[$paket];
             <span>Rp <?= number_format($data['harga'],0,',','.') ?></span>
         </p>
 
-        <form action="booking_payment.php" method="POST" id="form-lanjut">
-
-            <input type="hidden" name="paket" value="<?= $data['nama'] ?>">
-            <input type="hidden" name="harga" value="<?= $data['harga'] ?>">
-
-            <input type="hidden" name="tanggal" id="send-tanggal">
-            <input type="hidden" name="jam" id="send-jam">
-
-            <button class="w-full bg-gray-300 text-gray-600 py-3 rounded-lg font-semibold cursor-not-allowed" 
-                id="btn-lanjut" disabled>
-                Selanjutnya
-            </button>
-
-        </form>
-
     </div>
 </div>
-
 
 
 <!-- ================= SCRIPT ================= -->
@@ -214,30 +209,29 @@ function toggleJam() {
     }
 }
 
-
-const dateInput = document.querySelector("input[name='tanggal']");
-const jamInputs = document.querySelectorAll("input[name='jam']");
+const dateInput = document.getElementById("input-tanggal");
+const jamInputs = document.querySelectorAll("input[name='jam-radio']");
 const dispTanggal = document.getElementById("display-tanggal");
 const dispJam = document.getElementById("display-jam");
 const btnLanjut = document.getElementById("btn-lanjut");
 
 dateInput.addEventListener("change", () => {
     dispTanggal.textContent = dateInput.value;
-    applyReady();
+    document.getElementById("send-tanggal").value = dateInput.value;
+    checkReady();
 });
 
 jamInputs.forEach(j => {
     j.addEventListener("change", () => {
         dispJam.textContent = j.value;
-        applyReady();
+        document.getElementById("send-jam").value = j.value;
+        checkReady();
     });
 });
 
-function applyReady() {
-    if (dateInput.value && dispJam.textContent !== "Belum memilih") {
-
-        document.getElementById("send-tanggal").value = dateInput.value;
-        document.getElementById("send-jam").value = dispJam.textContent;
+function checkReady() {
+    if (document.getElementById("send-tanggal").value &&
+        document.getElementById("send-jam").value) {
 
         btnLanjut.disabled = false;
         btnLanjut.classList.remove("bg-gray-300","text-gray-600","cursor-not-allowed");
