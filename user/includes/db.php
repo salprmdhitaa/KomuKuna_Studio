@@ -2,7 +2,7 @@
 $host = "localhost";
 $user = "root";
 $pass = "";
-$db   = "komukunastudio";
+$db   = "booking";
 
 $koneksi = new mysqli($host, $user, $pass, $db);
 
