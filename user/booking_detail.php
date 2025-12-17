@@ -1,8 +1,10 @@
-<?php 
-include '../user/includes/db.php'; 
-include '../user/includes/header.php'; 
+<?php
+include '../user/includes/db.php';
+include '../user/includes/header.php';
 
-// ===== Ambil paket dari URL =====
+// =============================
+// Ambil paket dari URL
+// =============================
 $paket = $_GET['paket'] ?? null;
 
 $paket_list = [
@@ -77,21 +79,21 @@ $data = $paket_list[$paket];
 
 <div class="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-10 items-start">
 
-    <!-- ================= LEFT ================= -->
+    <!-- ================= LEFT (PAKET) ================= -->
     <div class="w-full max-w-sm">
         <div class="bg-white shadow-lg rounded-2xl overflow-hidden">
             <img src="<?= $data['img'] ?>" class="w-full h-64 object-cover">
             <div class="p-5">
 
                 <h3 class="text-lg font-bold text-pink-500 mb-3">
-                    <?= $data['nama'] ?> - Rp. <?= number_format($data['harga'],0,',','.') ?>
+                    <?= $data['nama'] ?> - Rp <?= number_format($data['harga'],0,',','.') ?>
                 </h3>
 
-                <div class="w-full h-px bg-gray-200 mb-4"></div>
+                <div class="border-t my-4"></div>
 
-                <div class="text-gray-600 text-sm mb-6">
+                <div class="text-gray-600 text-sm space-y-1">
                     <?php foreach ($data['deskripsi'] as $d): ?>
-                        <p class="mb-1"><?= $d ?></p>
+                        <p>• <?= $d ?></p>
                     <?php endforeach; ?>
                 </div>
 
@@ -99,92 +101,82 @@ $data = $paket_list[$paket];
         </div>
     </div>
 
-    
-    <!-- ================= MIDDLE ================= -->
-    <form action="booking_payment.php" method="POST" class="bg-white shadow-md rounded-xl p-6 max-w-md">
+    <!-- ================= MIDDLE (FORM) ================= -->
+    <form action="booking_payment.php" method="POST"
+          class="bg-white shadow-md rounded-xl p-6 max-w-md">
 
-        <h3 class="text-xl font-bold mb-1 text-pink-500">Pilih tanggal dan waktu</h3>
-        <div class="w-full h-px bg-gray-200 mb-4 mt-3"></div>
+        <h3 class="text-xl font-bold text-pink-500 mb-1">
+            Pilih Tanggal & Waktu
+        </h3>
+        <div class="border-t my-4"></div>
 
-        <!-- Kirim paket -->
+        <!-- Hidden data -->
         <input type="hidden" name="paket" value="<?= $data['nama'] ?>">
         <input type="hidden" name="harga" value="<?= $data['harga'] ?>">
-
-        <!-- Kirim tanggal & jam -->
         <input type="hidden" name="tanggal" id="send-tanggal">
         <input type="hidden" name="jam" id="send-jam">
 
         <!-- Tanggal -->
-        <label class="block mt-4 text-sm font-semibold mb-1 text-gray-600">Tanggal</label>
-        <input type="date" id="input-tanggal" 
+        <label class="block text-sm font-semibold text-gray-600 mb-1">Tanggal</label>
+        <input type="date" id="input-tanggal"
                class="w-full px-3 py-2 border rounded-lg mb-5" required>
 
         <!-- Jam -->
-        <label class="block text-sm font-semibold mb-1 text-gray-600">Jam</label>
+        <label class="block text-sm font-semibold text-gray-600 mb-1">Jam</label>
 
         <div id="jam-list" class="grid grid-cols-3 gap-3 mt-2">
+            <?php
+            $jam_list = [
+                "09:00","09:30","10:00","10:30","11:00","11:30","12:00",
+                "12:30","13:00","13:30","14:00","14:30","15:00","15:30",
+                "16:00","16:30","17:00","17:30","18:00","18:30","19:00",
+                "19:30","20:00"
+            ];
 
-            <?php 
-            $jam_list = ["09:00","09:30","10:00","10:30","11:00","11:30","12:00",
-                         "12:30","13:00","13:30","14:00","14:30","15:00","15:30",
-                         "16:00","16:30","17:00","17:30","18:00","18:30","19:00",
-                         "19:30","20:00"];
-
-            $counter = 0;
-            foreach ($jam_list as $jam):
+            foreach ($jam_list as $i => $jam):
             ?>
-
-            <label class="jam-item flex items-center gap-2 p-2 border rounded-lg cursor-pointer hover:bg-gray-50
-                <?= $counter > 5 ? 'hidden' : '' ?>">
+            <label class="jam-item flex items-center gap-2 p-2 border rounded-lg cursor-pointer hover:bg-gray-50 <?= $i > 5 ? 'hidden' : '' ?>">
                 <input type="radio" name="jam-radio" value="<?= $jam ?>">
                 <span><?= $jam ?></span>
             </label>
-
-            <?php $counter++; endforeach; ?>
-
+            <?php endforeach; ?>
         </div>
 
-        <button type="button" onclick="toggleJam()" 
+        <button type="button" onclick="toggleJam()"
                 id="btn-toggle"
                 class="mt-4 text-pink-500 underline text-sm font-medium">
             Tampilkan semua jadwal
         </button>
 
         <button type="submit"
-            class="w-full mt-6 bg-gray-300 text-gray-600 py-3 rounded-lg font-semibold cursor-not-allowed"
-            id="btn-lanjut" disabled>
+                id="btn-lanjut"
+                disabled
+                class="w-full mt-6 bg-gray-300 text-gray-600 py-3 rounded-lg font-semibold cursor-not-allowed">
             Selanjutnya
         </button>
-
     </form>
 
-
-    <!-- ================= RIGHT ================= -->
+    <!-- ================= RIGHT (SUMMARY) ================= -->
     <div class="bg-white shadow-lg rounded-xl p-6 h-fit">
+        <h3 class="text-xl font-bold text-pink-500 mb-1">Ringkasan Booking</h3>
+        <div class="border-t my-4"></div>
 
-        <h3 class="text-xl font-bold mb-1 text-pink-500">Ringkasan Booking</h3>
-        <div class="w-full h-px bg-gray-200 mb-4 mt-3"></div>
-
-        <p class="text-gray-600 text-sm mb-3">
-            <span class="font-semibold">Tanggal :</span> 
-            <span id="display-tanggal">Belum memilih</span>
+        <p class="text-gray-600 text-sm mb-2">
+            <b>Tanggal :</b> <span id="display-tanggal">Belum memilih</span>
+        </p>
+        <p class="text-gray-600 text-sm mb-4">
+            <b>Waktu :</b> <span id="display-jam">Belum memilih</span>
         </p>
 
-        <p class="text-gray-600 text-sm mb-3">
-            <span class="font-semibold">Waktu :</span> 
-            <span id="display-jam">Belum memilih</span>
-        </p>
+        <div class="border-t my-4"></div>
 
-        <div class="w-full h-px bg-gray-200 my-4"></div>
-
-        <p class="flex justify-between text-pink-500 font-semibold mb-5">
-            <span>Harga paket</span>
+        <p class="flex justify-between font-semibold text-pink-500">
+            <span>Harga Paket</span>
             <span>Rp <?= number_format($data['harga'],0,',','.') ?></span>
         </p>
-
     </div>
-</div>
 
+</div>
 
 <!-- ================= SCRIPT ================= -->
 <script>
@@ -192,39 +184,32 @@ let showAll = false;
 
 function toggleJam() {
     const items = document.querySelectorAll(".jam-item");
-    const btnToggle = document.getElementById("btn-toggle");
+    const btn = document.getElementById("btn-toggle");
 
-    if (!showAll) {
-        items.forEach(el => el.classList.remove("hidden"));
-        btnToggle.textContent = "Tampilkan sedikit jadwal";
-        showAll = true;
-    } else {
-        let count = 0;
-        items.forEach(el => {
-            if (count > 5) el.classList.add("hidden");
-            count++;
-        });
-        btnToggle.textContent = "Tampilkan semua jadwal";
-        showAll = false;
-    }
+    showAll = !showAll;
+    items.forEach((el, i) => {
+        if (i > 5) el.classList.toggle("hidden", !showAll);
+    });
+
+    btn.textContent = showAll
+        ? "Tampilkan sedikit jadwal"
+        : "Tampilkan semua jadwal";
 }
 
 const dateInput = document.getElementById("input-tanggal");
-const jamInputs = document.querySelectorAll("input[name='jam-radio']");
-const dispTanggal = document.getElementById("display-tanggal");
-const dispJam = document.getElementById("display-jam");
+const jamRadios = document.querySelectorAll("input[name='jam-radio']");
 const btnLanjut = document.getElementById("btn-lanjut");
 
 dateInput.addEventListener("change", () => {
-    dispTanggal.textContent = dateInput.value;
+    document.getElementById("display-tanggal").textContent = dateInput.value;
     document.getElementById("send-tanggal").value = dateInput.value;
     checkReady();
 });
 
-jamInputs.forEach(j => {
-    j.addEventListener("change", () => {
-        dispJam.textContent = j.value;
-        document.getElementById("send-jam").value = j.value;
+jamRadios.forEach(radio => {
+    radio.addEventListener("change", () => {
+        document.getElementById("display-jam").textContent = radio.value;
+        document.getElementById("send-jam").value = radio.value;
         checkReady();
     });
 });
@@ -235,7 +220,7 @@ function checkReady() {
 
         btnLanjut.disabled = false;
         btnLanjut.classList.remove("bg-gray-300","text-gray-600","cursor-not-allowed");
-        btnLanjut.classList.add("bg-pink-500","hover:bg-pink-600","text-white","cursor-pointer");
+        btnLanjut.classList.add("bg-pink-500","hover:bg-pink-600","text-white");
     }
 }
 </script>
