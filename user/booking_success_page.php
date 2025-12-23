@@ -107,7 +107,7 @@ $addons = json_decode($booking['addons'], true) ?? [];
         <a href="booking.php" class="w-1/2 text-center border rounded-lg py-2 hover:bg-gray-50">
             Booking Lagi
         </a>
-        <a href="..user/index.php" class="w-1/2 text-center bg-pink-500 text-white rounded-lg py-2 hover:bg-pink-600">
+        <a href="homepage.php" class="w-1/2 text-center bg-pink-500 text-white rounded-lg py-2 hover:bg-pink-600">
             Ke Beranda
         </a>
     </div>

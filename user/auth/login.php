@@ -27,11 +27,12 @@ if (isset($_POST['login'])) {
         $_SESSION['role']   = $user['role'];
 
        if ($user['role'] === 'admin') {
-            header("Location: ../admin/admin_dashboard.php");
-        } else {
-            header("Location: ../index.php");
+        header("Location: ../../admin/admin_dashboard.php");
+        }  else {
+        header("Location: ../homepage.php");
         }
         exit;
+
 
     } else {
         $error = "Username atau password salah!";

@@ -1,5 +1,5 @@
 <?php include '../user/includes/db.php'; ?>
-<?php include '../user/includes/header.php'; ?>
+<?php include '../user/includes/header_login.php'; ?>
 
 <!DOCTYPE html>
 <html lang="id">
